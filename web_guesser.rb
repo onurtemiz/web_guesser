@@ -3,7 +3,9 @@
 require 'sinatra'
 require 'sinatra/reloader'
 
-randNumber = rand(101)
+@@randNumber = rand(101)
+@@life = 21
+
 
 def check_guess(guess, randNumber)
   guess = guess.to_i
@@ -35,9 +37,24 @@ def color_check(message)
   end
 end
 
+  def life_check(message)
+    @@life -= 1
+    if message == 'Correct!'
+      @@life = 20
+      @@randNumber = rand(101)
+      return message
+    elsif @@life == 0
+      @@life =  20
+      @@randNumber = rand(101)
+      return 'You have lost. New number has been generated.'
+    end
+  end
+
 get '/' do
-  message = check_guess(params['guess'], randNumber)
+  now_randNumber = @@randNumber
+  message = check_guess(params['guess'], now_randNumber)
   color = color_check(message)
-  secret = "The SECRET NUMBER is #{randNumber}" if message == 'Correct!'
-  erb :index, locals: { randNumber: randNumber, message: message,secret: secret,color: color }
+  secret = "The SECRET NUMBER is #{now_randNumber}" if message == 'Correct!' || params['cheat']
+  message = life_check(message) unless life_check(message).nil?
+  erb :index, locals: { randNumber: now_randNumber, message: message,secret: secret,color: color,life: @@life }
 end
