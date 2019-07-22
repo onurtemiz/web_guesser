@@ -8,25 +8,36 @@ randNumber = rand(101)
 def check_guess(guess, randNumber)
   guess = guess.to_i
   if guess == randNumber
-    message = 'Correct!'
-    return message
+    return 'Correct!'
   elsif guess + 5 < randNumber
-    message = 'Way Too Low!'
-    return message
+    return 'Way Too Low!'
   elsif guess > randNumber + 5
-    message = 'Way Too High!'
-    return message
+    return 'Way Too High!'
   elsif guess < randNumber
-    message = 'Too Low!'
-    return message
+    return 'Too Low!'
   elsif guess > randNumber
-    message = 'Too High!'
-    return message
+    return 'Too High!'
+  end
+end
+
+def color_check(message)
+  case message
+  when 'Way Too High!'
+    'red'
+  when 'Too High!'
+    'salmon'
+  when 'Way Too Low!'
+    'red'
+  when 'Too Low!'
+    'salmon'
+  when 'Correct!'
+    'green'
   end
 end
 
 get '/' do
   message = check_guess(params['guess'], randNumber)
+  color = color_check(message)
   secret = "The SECRET NUMBER is #{randNumber}" if message == 'Correct!'
-  erb :index, locals: { randNumber: randNumber, message: message,secret: secret }
+  erb :index, locals: { randNumber: randNumber, message: message,secret: secret,color: color }
 end
